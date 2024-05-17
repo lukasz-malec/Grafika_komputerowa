@@ -21,7 +21,7 @@ const fragmentShaderTxt = `
     }
 `;
 
-const Square = function () {
+const Hexagon = function () {
     const canvas = document.getElementById('main-canvas');
     const gl = canvas.getContext('webgl');
     let canvasColor = [0.2, 0.5, 0.8];
@@ -56,19 +56,21 @@ const Square = function () {
     gl.validateProgram(program);
 
     
-    let squareVerts = [
-        // X, Y         R, G, B
-        -0.5,  0.5,   1.0, 0.0, 0.0,  
-        -0.5, -0.5,   0.0, 1.0, 0.0, 
-        0.5, -0.5,   0.0, 0.0, 1.0,  
-        0.5,  0.5,   1.0, 1.0, 0.0,  
-        -0.5,  0.5,   1.0, 0.0, 0.0,  
-        0.5, -0.5,   0.0, 0.0, 1.0   
+    let hexagonVerts = [
+        // X, Y        R, G, B
+        0.0,  0.0,   1.0, 1.0, 1.0,  
+        0.0,  0.5,   1.0, 0.0, 0.0,  
+        -0.43, 0.25,  0.0, 1.0, 0.0,  
+        -0.43, -0.25, 0.0, 0.0, 1.0,  
+        0.0, -0.5,   1.0, 1.0, 0.0,  
+        0.43, -0.25, 1.0, 0.0, 1.0,  
+        0.43,  0.25, 0.0, 1.0, 1.0,  
+        0.0,  0.5,   1.0, 0.0, 0.0   
     ];
 
-    const squareVertBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(squareVerts), gl.STATIC_DRAW);
+    const hexagonVertBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, hexagonVertBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(hexagonVerts), gl.STATIC_DRAW);
 
     const posAttribLocation = gl.getAttribLocation(program, 'vertPosition');
     gl.vertexAttribPointer(
@@ -93,12 +95,10 @@ const Square = function () {
     gl.enableVertexAttribArray(colorAttribLocation);
 
     // render time 
-
-    
     gl.useProgram(program);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 8);
 } 
 
 function checkGl(gl) {
@@ -119,4 +119,5 @@ function checkLink(gl, program) {
     }
 }
 
-Square();
+
+Hexagon();
