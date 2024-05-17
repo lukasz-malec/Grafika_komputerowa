@@ -1,4 +1,3 @@
-console.error('works');
 const vertexShaderTxt = `
     precision mediump float;
 
@@ -11,7 +10,7 @@ const vertexShaderTxt = `
         fragColor = vertColor;
         gl_Position = vec4(vertPosition, 0.0, 1.0);
     }
-`
+`;
 const fragmentShaderTxt = `
     precision mediump float;
 
@@ -20,12 +19,12 @@ const fragmentShaderTxt = `
     void main() {
         gl_FragColor = vec4(fragColor, 1.0);
     }
-`
+`;
 
-const Triangle = function () {
+const Square = function () {
     const canvas = document.getElementById('main-canvas');
     const gl = canvas.getContext('webgl');
-    let canvasColor = [0.2, 0.5, 0.8]
+    let canvasColor = [0.2, 0.5, 0.8];
 
     checkGl(gl);
 
@@ -42,29 +41,35 @@ const Triangle = function () {
     gl.compileShader(fragmentShader);
 
     checkShaderCompile(gl, vertexShader);
+    checkShaderCompile(gl, fragmentShader);
 
     const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
 
     gl.linkProgram(program);
+    checkLink(gl, program);
 
     gl.detachShader(program, vertexShader);
     gl.detachShader(program, fragmentShader);
 
     gl.validateProgram(program);
 
-    let triangleVerts = [
-     // X, Y              R   G    B
-        0.0, 0.5,       1.0, 0.0, 0.0,
-        -0.5, -0.5,     0.0, 1.0, 0.0,
-        0.5, -0.5,      0.0, 0.0, 1.0
+    
+    let squareVerts = [
+        // X, Y         R, G, B
+        -0.5,  0.5,   1.0, 0.0, 0.0,  
+        -0.5, -0.5,   0.0, 1.0, 0.0, 
+        0.5, -0.5,   0.0, 0.0, 1.0,  
+        0.5,  0.5,   1.0, 1.0, 0.0,  
+        -0.5,  0.5,   1.0, 0.0, 0.0,  
+        0.5, -0.5,   0.0, 0.0, 1.0   
     ];
 
-    const triangleVertBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVerts), gl.STATIC_DRAW);
-    
+    const squareVertBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(squareVerts), gl.STATIC_DRAW);
+
     const posAttribLocation = gl.getAttribLocation(program, 'vertPosition');
     gl.vertexAttribPointer(
         posAttribLocation,
@@ -83,30 +88,35 @@ const Triangle = function () {
         gl.FLOAT,
         gl.FALSE,
         5 * Float32Array.BYTES_PER_ELEMENT,
-        2 * Float32Array.BYTES_PER_ELEMENT,
+        2 * Float32Array.BYTES_PER_ELEMENT
     );
     gl.enableVertexAttribArray(colorAttribLocation);
+
+    // render time 
+
     
-    // render time
-
     gl.useProgram(program);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
 } 
 
-
 function checkGl(gl) {
-    if (!gl) {console.log('WebGL not suppoerted, use another browser');}
+    if (!gl) {
+        console.log('WebGL not supported, use another browser');
+    }
 }
 
 function checkShaderCompile(gl, shader) {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('shader not compiled', gl.getShaderInfoLog(shader));
+        console.error('Shader not compiled', gl.getShaderInfoLog(shader));
     }
 }
 
 function checkLink(gl, program) {
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('linking error', gl.getProgramInfoLog(program));
+        console.error('Linking error', gl.getProgramInfoLog(program));
     }
 }
+
+Square();
