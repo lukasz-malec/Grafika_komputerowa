@@ -1,3 +1,5 @@
+console.error('works');
+
 const vertexShaderTxt = `
     precision mediump float;
 
@@ -11,6 +13,7 @@ const vertexShaderTxt = `
         gl_Position = vec4(vertPosition, 0.0, 1.0);
     }
 `;
+
 const fragmentShaderTxt = `
     precision mediump float;
 
@@ -21,14 +24,16 @@ const fragmentShaderTxt = `
     }
 `;
 
-const Hexagon = function () {
+let colors = generateRandomColors();
+
+const Triangle = function () {
     const canvas = document.getElementById('main-canvas');
     const gl = canvas.getContext('webgl');
     let canvasColor = [0.2, 0.5, 0.8];
 
     checkGl(gl);
 
-    gl.clearColor(...canvasColor, 1.0);   // R, G, B,  A 
+    gl.clearColor(...canvasColor, 1.0);   // R, G, B, A
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -41,36 +46,28 @@ const Hexagon = function () {
     gl.compileShader(fragmentShader);
 
     checkShaderCompile(gl, vertexShader);
-    checkShaderCompile(gl, fragmentShader);
 
     const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
 
     gl.linkProgram(program);
-    checkLink(gl, program);
 
     gl.detachShader(program, vertexShader);
     gl.detachShader(program, fragmentShader);
 
     gl.validateProgram(program);
 
-    
-    let hexagonVerts = [
-        // X, Y        R, G, B
-        0.0,  0.0,   1.0, 1.0, 1.0,  
-        0.0,  0.5,   1.0, 0.0, 0.0,  
-        -0.43, 0.25,  0.0, 1.0, 0.0,  
-        -0.43, -0.25, 0.0, 0.0, 1.0,  
-        0.0, -0.5,   1.0, 1.0, 0.0,  
-        0.43, -0.25, 1.0, 0.0, 1.0,  
-        0.43,  0.25, 0.0, 1.0, 1.0,  
-        0.0,  0.5,   1.0, 0.0, 0.0   
+    const triangleVerts = [
+        // X, Y         R, G, B
+        0.0, 0.5,       ...colors[0],
+        -0.5, -0.5,     ...colors[1],
+        0.5, -0.5,      ...colors[2]
     ];
 
-    const hexagonVertBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, hexagonVertBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(hexagonVerts), gl.STATIC_DRAW);
+    const triangleVertBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVerts), gl.STATIC_DRAW);
 
     const posAttribLocation = gl.getAttribLocation(program, 'vertPosition');
     gl.vertexAttribPointer(
@@ -94,12 +91,17 @@ const Hexagon = function () {
     );
     gl.enableVertexAttribArray(colorAttribLocation);
 
-    // render time 
     gl.useProgram(program);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+};
 
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 8);
-} 
+function generateRandomColor() {
+    return [Math.random(), Math.random(), Math.random()];
+}
+
+function generateRandomColors() {
+    return [generateRandomColor(), generateRandomColor(), generateRandomColor()];
+}
 
 function checkGl(gl) {
     if (!gl) {
@@ -109,15 +111,14 @@ function checkGl(gl) {
 
 function checkShaderCompile(gl, shader) {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader not compiled', gl.getShaderInfoLog(shader));
+        console.error('shader not compiled', gl.getShaderInfoLog(shader));
     }
 }
 
-function checkLink(gl, program) {
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Linking error', gl.getProgramInfoLog(program));
-    }
+function changeColor() {
+    colors = generateRandomColors();
+    Triangle();
 }
 
+window.onload = Triangle;
 
-Hexagon();
