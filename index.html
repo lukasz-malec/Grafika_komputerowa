@@ -4,9 +4,13 @@
     <meta charset="utf-8" />
     <title>My test page</title>
   </head>
-  <body onload="Triangle();">
+  <body onload="startDraw();">
     <canvas id="main-canvas" width="800" height="600"></canvas>
-    <button onclick="changeColor()">Change Color</button>
+    <h2>do 16:27 dodać kolejny sześcian, najlepiej przesunięty względem pierwszego</h2>
   </body>
-  <script src="script.js"></script>
+  <img id="img" src="Untitled.png" hidden/>
+  <script src="https://cdn.jsdelivr.net/npm/gl-matrix@3/gl-matrix.js"></script>
+  <script src="webgl-obj-loader.js"></script>
+  <script src="script_2.js"></script>
 </html>
+
